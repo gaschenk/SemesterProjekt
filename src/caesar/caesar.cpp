@@ -8,9 +8,27 @@
 #include <fstream>
 #include <algorithm>
 
+static std::vector<std::string> wordList = {};
+void caesar::loadDictionary()
+{
+	std::ifstream inputFileStream("resources\\german.dic");
+	std::string word;
+	if (!inputFileStream.is_open()) {
+		std::cout << "Datei konnte nicht geoeffnet werden!" << std::endl;
+	}
+	std::cout << "Datei wird geladen.." << std::endl;
+	while (std::getline(inputFileStream, word)) {
+		if (!word.empty()) {
+			transform(word.begin(), word.end(), word.begin(), ::tolower);
+			//std::cout << "word: " << word << std::endl;
+			wordList.push_back(word);
+		}
+	}
+	std::cout << "Datei geladen!" << std::endl;
+}
 std::shared_ptr<std::string> caesar::decode(const std::string& string, int shift)
 {
-    return caesar::encode(string, 26-shift);
+	return caesar::encode(string, 26-shift);
 }
 
 std::shared_ptr<std::string> caesar::encode(const std::string& string, int shift)
