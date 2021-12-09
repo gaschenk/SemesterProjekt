@@ -45,7 +45,7 @@ std::shared_ptr<std::string> caesar::encode(const std::string& string, int shift
 			i = ((i-'a'+shift)%26)+'a';
 		}
 	}
-	std::cout << *output << "|" << string << std::endl;
+	//std::cout << *output << "|" << string << std::endl;
 	return output;
 }
 
@@ -63,7 +63,7 @@ int caesar::rateSolutionAccordingToTypicalCharacterSequence(const std::string& s
 		if (c=='q' || c=='Q')
 			q = true;
 	}
-	std::cout << "Value of Qu: " << value << std::endl;
+	//std::cout << "Value of Qu: " << value << std::endl;
 	return value;
 }
 
@@ -99,7 +99,7 @@ int caesar::rateSolutionAccordingToVocals(const std::string& string)
 	else
 		value -= 75;
 
-	std::cout << "Value of vocals: " << value << std::endl;
+	//std::cout << "Value of vocals: " << value << std::endl;
 	return value;
 }
 
@@ -139,7 +139,7 @@ int caesar::getValueOfWord(const std::string& string, int start, int end)
 		value += 50;
 	else
 		value -= 50;
-	std::cout << "Value of " << word << " " << value << std::endl;
+	//std::cout << "Value of " << word << " " << value << std::endl;
 	return value;
 }
 
