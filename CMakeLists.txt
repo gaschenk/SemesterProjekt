@@ -72,3 +72,7 @@ target_link_libraries(${PROJECT_NAME}
         Qt::Widgets
         )
 
+add_custom_command(
+        TARGET ${PROJECT_NAME}
+        PRE_BUILD COMMAND ${CMAKE_COMMAND} -E
+        create_symlink ${CMAKE_CURRENT_SOURCE_DIR}/resources $<TARGET_FILE_DIR:${PROJECT_NAME}>/resources)
