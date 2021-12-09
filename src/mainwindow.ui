@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>250</width>
-    <height>46</height>
+    <height>200</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -22,13 +22,13 @@
   <property name="minimumSize">
    <size>
     <width>250</width>
-    <height>46</height>
+       <height>200</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>250</width>
-    <height>46</height>
+       <height>200</height>
    </size>
   </property>
   <property name="baseSize">
@@ -75,17 +75,46 @@
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="outputEdit">
-       <property name="readOnly">
-        <bool>true</bool>
-       </property>
-       <property name="placeholderText">
-        <string>chiffrierter Text</string>
-       </property>
-      </widget>
+         <widget class="QLineEdit" name="outputEdit">
+             <property name="readOnly">
+                 <bool>true</bool>
+             </property>
+             <property name="placeholderText">
+                 <string>chiffrierter Text</string>
+             </property>
+         </widget>
      </item>
     </layout>
    </widget>
+      <widget class="QLineEdit" name="bruteForceEdit">
+          <property name="geometry">
+              <rect>
+                  <x>10</x>
+                  <y>50</y>
+                  <width>231</width>
+                  <height>21</height>
+              </rect>
+          </property>
+          <property name="placeholderText">
+              <string>Enter Caesar Chiffre</string>
+          </property>
+      </widget>
+      <widget class="QTextEdit" name="outputWindow">
+          <property name="enabled">
+              <bool>true</bool>
+          </property>
+          <property name="geometry">
+              <rect>
+                  <x>10</x>
+                  <y>80</y>
+                  <width>231</width>
+                  <height>111</height>
+              </rect>
+          </property>
+          <property name="readOnly">
+              <bool>true</bool>
+          </property>
+      </widget>
   </widget>
  </widget>
  <resources/>
