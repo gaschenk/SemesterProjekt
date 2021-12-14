@@ -27,7 +27,8 @@ add_executable(${PROJECT_NAME} src/main.cpp
         src/mainwindow.h
         src/mainwindow.ui
         src/caesar/caesar.cpp
-        src/caesar/caesar.h)
+        src/caesar/caesar.h
+        src/caesar/result.h)
 
 # Copy shared library files from Qt
 if (WIN32)
