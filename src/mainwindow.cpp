@@ -5,8 +5,13 @@ MainWindow::MainWindow(QWidget* parent)
 		:QMainWindow(parent), ui(new Ui::MainWindow)
 {
 	ui->setupUi(this);
-	/*connect(ui->inputEdit, SIGNAL(textChanged(QString)), this, SLOT(updateCaesarField()));
-	connect(ui->shiftSpinBox, SIGNAL(valueChanged(int)), this, SLOT(updateCaesarField()));*/
+
+	/*
+	 * This would update on input changed, but this is rather bad in terms of performance especially with larger texts.
+	 * connect(ui->inputEdit, SIGNAL(textChanged(QString)), this, SLOT(updateCaesarField()));
+	 * connect(ui->shiftSpinBox, SIGNAL(valueChanged(int)), this, SLOT(updateCaesarField()));
+	*/
+
 	connect(ui->encodeButton, SIGNAL(clicked()), this, SLOT(updateCaesarField()));
 	connect(ui->bruteForceButton, SIGNAL(clicked()), this, SLOT(updateResultWindow()));
 }
@@ -29,19 +34,21 @@ void MainWindow::updateResultWindow()
 				.emplace_back(std::async(std::launch::async, [i, &strings, &bestSolution, &bestValue, &caesar] {
 					std::stringstream stringstream;
 					std::string decoded = *(caesar::decode(caesar, i));
-					int value = caesar::rateSolution(decoded);
+					Result result = caesar::rateSolution(decoded);
 					auto color = QColorConstants::Blue;
-					if (value<0)
+					if (result.TotalRating<0)
 						color = QColorConstants::Red;
-					stringstream << decoded << " is rated " << value;
+					stringstream << decoded << " is rated " << result.TotalRating << "[WR: " << result.WordRating
+								 << "; VR:" << result.VocalRating << "; CSR:" << result.CharacterSequenceRating << "]";
 
 					strings[i] = std::make_tuple(stringstream.str(), color);
-					if (bestValue<value) {
-						bestValue = value;
+					if (bestValue<result.TotalRating) {
+						bestValue = result.TotalRating;
 						bestSolution = i;
 					}
 				}).share());
 	}
+
 	for (const auto& future : asyncIterationThreads)
 		future.wait();
 
@@ -74,7 +81,7 @@ void MainWindow::updateCaesarField()
 	ui->outputEdit->setText(
 			QString::fromStdString(*(caesar::encode(ui->inputEdit->text().toStdString(), ui->shiftSpinBox->value()))));
 	if (!ui->outputEdit->text().isEmpty()) {
-		int value = caesar::rateSolution(ui->outputEdit->text().toStdString());
-		std::cout << "Total value: " << value << std::endl;
+		Result result = caesar::rateSolution(ui->outputEdit->text().toStdString());
+		std::cout << "Total value: " << result.TotalRating << std::endl;
 	}
 }

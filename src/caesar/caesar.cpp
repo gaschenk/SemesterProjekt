@@ -134,6 +134,13 @@ int caesar::getValueOfWord(const std::string& string, int start, int end)
 {
 	int value = 0;
 	std::string word = string.substr(start, end-start);
+	if (word.length()>0) {
+		char lastCharacter = word[word.length()-1];
+		if (!isalpha(lastCharacter)) {
+			word.erase(std::remove(word.end()-1, word.end(), lastCharacter), word.end());
+			//std::cout << "Last Character: " << lastCharacter << std::endl;
+		}
+	}
 	transform(word.begin(), word.end(), word.begin(), ::tolower);
 	if (std::find(wordList.begin(), wordList.end(), word)!=wordList.end())
 		value += 50;
@@ -143,8 +150,11 @@ int caesar::getValueOfWord(const std::string& string, int start, int end)
 	return value;
 }
 
-int caesar::rateSolution(const std::string& string)
+Result caesar::rateSolution(const std::string& string)
 {
-	return caesar::rateSolutionAccordingToVocals(string)+caesar::rateSolutionAccordingToWordList(string)
-			+caesar::rateSolutionAccordingToTypicalCharacterSequence(string);
+	return Result{
+			caesar::rateSolutionAccordingToWordList(string),
+			caesar::rateSolutionAccordingToVocals(string),
+			caesar::rateSolutionAccordingToTypicalCharacterSequence(string)
+	};
 }
