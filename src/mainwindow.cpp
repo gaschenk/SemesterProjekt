@@ -12,6 +12,8 @@ MainWindow::MainWindow(QWidget* parent)
 	connect(ui->encodeButton, SIGNAL(clicked()), this, SLOT(updateCaesarField()));
 	connect(ui->bruteForceButton, SIGNAL(clicked()), this, SLOT(updateResultWindow()));
 	connect(&this->resultContainer, SIGNAL(resultsProcessed()), this, SLOT(finalUpdateResults()));
+	connect(&this->resultContainer, SIGNAL(singleResultProcessed(QColor, std::string)), this,
+			SLOT(updateSingleResult(QColor, std::string)));
 }
 
 MainWindow::~MainWindow()
@@ -21,13 +23,14 @@ MainWindow::~MainWindow()
 
 void MainWindow::updateResultWindow()
 {
+	resultContainer.reset();
+	resultContainer.setBaseString(ui->bruteForceEdit->text().toStdString());
 	ui->outputWindow->clear();
-	std::string caesar = ui->bruteForceEdit->text().toStdString();
 	for (int i = 0; i<=25; ++i) {
-		std::thread iterationThread{ [this, &caesar, &i] {
-			resultContainer.updateResultTextArea(std::make_shared<std::string>(caesar), i, ui->outputWindow);
+		std::thread iterationThread{ [this, i] {
+			resultContainer.updateResultTextArea(i, ui->outputWindow);
 		}};
-		iterationThread.join();
+		iterationThread.detach();
 	}
 }
 void MainWindow::finalUpdateResults()
@@ -53,11 +56,19 @@ void MainWindow::finalUpdateResults()
 }
 void MainWindow::updateCaesarField()
 {
+	mutex.lock();
 	ui->outputEdit->setText(
 			QString::fromStdString(*(caesar::encode(ui->inputEdit->text().toStdString(), ui->shiftSpinBox->value()))));
 	if (!ui->outputEdit->text().isEmpty()) {
 		Result result = caesar::rateSolution(ui->outputEdit->text().toStdString());
 		std::cout << "Total value: " << result.TotalRating << std::endl;
 	}
-	resultContainer.reset();
+	mutex.unlock();
+}
+void MainWindow::updateSingleResult(QColor color, std::string string)
+{
+	mutex.lock();
+	ui->outputWindow->setTextColor(color);
+	ui->outputWindow->append(QString::fromStdString(string));
+	mutex.unlock();
 }

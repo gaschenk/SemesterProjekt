@@ -3,6 +3,8 @@
 //
 
 #include "ResultContainer.h"
+#include <QMutex>
+QMutex mutex;
 ResultContainer::ResultContainer()
 {
 	resultList.resize(26);
@@ -20,18 +22,13 @@ void ResultContainer::reset()
 	resultList.clear();
 	resultList.resize(26);
 	counter = 0;
-
 	bestValue = 0;
 	bestSolution = -1;
 }
-void ResultContainer::updateResultTextArea(const std::shared_ptr<std::string>& string, int rot, QTextEdit* textedit)
+void ResultContainer::updateResultTextArea(int rot, QTextEdit* textedit)
 {
-	if (textedit==nullptr)
-		std::cout << "Textedit: nullptr" << std::endl;
-	if (string==nullptr)
-		std::cout << "string: nullptr" << std::endl;
 	if (rot>26) return;
-	std::string decoded = *(caesar::decode(*string, rot));
+	std::string decoded = *(caesar::decode(baseString, rot));
 	Result result = caesar::rateSolution(decoded);
 
 	auto color = QColorConstants::Blue;
@@ -42,17 +39,16 @@ void ResultContainer::updateResultTextArea(const std::shared_ptr<std::string>& s
 	stringStream << decoded << " is rated " << result.TotalRating << "[WR: " << result.WordRating
 				 << "; VR:" << result.VocalRating << "; CSR:" << result.CharacterSequenceRating << "]";
 
-	textedit->setTextColor(color);
-	textedit->append(QString::fromStdString(stringStream.str()));
-
-	if (bestValue<result.TotalRating) {
-		bestValue = result.TotalRating;
-		bestSolution = rot;
-	}
-	resultList[rot] = result;
 	try {
-		std::lock_guard<std::mutex> guard(counterMutex);
+		mutex.lock();
+		if (bestValue<result.TotalRating) {
+			bestValue = result.TotalRating;
+			bestSolution = rot;
+		}
+		emit this->singleResultProcessed(color, stringStream.str());
+		resultList[rot] = result;
 		counter++;
+		mutex.unlock();
 		if (counter>=26) {
 			emit
 			this->resultsProcessed();
@@ -61,4 +57,9 @@ void ResultContainer::updateResultTextArea(const std::shared_ptr<std::string>& s
 	catch (std::logic_error&) {
 		std::cerr << "Exception caught\n";
 	}
+}
+void ResultContainer::setBaseString(std::string string)
+{
+
+	this->baseString = string;
 }

@@ -4,25 +4,27 @@
 #pragma once
 #include <QObject>
 #include <QTextEdit>
+#include <QLineEdit>
 #include <mutex>
 #include "result.h"
 #include "caesar.h"
 
 class ResultContainer : public QObject {
-	Q_OBJECT
+Q_OBJECT
 public:
 	ResultContainer();
 	std::vector<Result> getResults();
 	[[nodiscard]] int getBestSolution() const;
 	void reset();
 	void updateResultTextArea(
-			const std::shared_ptr<std::string>&
-			string,
 			int rot, QTextEdit
 	* textedit);
-	signals:
-			void resultsProcessed();
+	void setBaseString(std::string string);
+signals:
+	void singleResultProcessed(QColor color, std::string string);
+	void resultsProcessed();
 private:
+	std::string baseString;
 	int bestValue = 0;
 	int bestSolution = -1;
 	int counter = 0;
